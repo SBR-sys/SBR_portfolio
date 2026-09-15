@@ -1,0 +1,56 @@
+# =========================
+# Operating System Files
+# =========================
+
+.DS_Store
+Thumbs.db
+desktop.ini
+
+
+# =========================
+# IDE / Editor Files
+# =========================
+
+.vscode/
+.idea/
+
+
+# =========================
+# Logs & Temporary Files
+# =========================
+
+*.log
+*.tmp
+*.temp
+
+
+# =========================
+# Environment Files
+# =========================
+
+.env
+.env.local
+.env.*.local
+
+
+# =========================
+# Dependencies
+# =========================
+
+node_modules/
+
+
+# =========================
+# Build / Generated Files
+# =========================
+
+dist/
+build/
+
+
+# =========================
+# Backup Files
+# =========================
+
+*.bak
+*.backup
