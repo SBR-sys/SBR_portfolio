@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
 
     revealEls.forEach((el, i) => {
-      el.style.transitionDelay = `${Math.min(i % 4, 3) * 80}ms`;
+      el.style.setProperty('--reveal-delay', `${Math.min(i % 4, 3) * 80}ms`);
       revealObserver.observe(el);
     });
   });
@@ -222,6 +222,150 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       });
     });
+  });
+
+  /* ------------------------------------------------------------------
+     3D TILT — certificates and screenshot galleries lean toward the pointer
+     with a moving glare. Delegated, so it works on dynamically rendered modals.
+     Mouse only; skipped on touch and reduced motion.
+  ------------------------------------------------------------------ */
+  safeInit('3d tilt', () => {
+    if (prefersReducedMotion) return;
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+    const MAX_TILT = 8;
+    let activeStage = null;
+    let lastEvent = null;
+    let frame = null;
+
+    const reset = (stage) => {
+      stage.classList.remove('is-tilting');
+      const target = stage.querySelector('.tilt-3d');
+      if (target) {
+        target.style.setProperty('--rx', '0deg');
+        target.style.setProperty('--ry', '0deg');
+      }
+    };
+
+    document.addEventListener('pointermove', (e) => {
+      if (e.pointerType !== 'mouse') return;
+      const stage = e.target.closest ? e.target.closest('.tilt-stage') : null;
+      if (activeStage && activeStage !== stage) {
+        reset(activeStage);
+        activeStage = null;
+      }
+      if (!stage) return;
+      activeStage = stage;
+      lastEvent = e;
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = null;
+        if (!activeStage || !lastEvent || !document.contains(activeStage)) return;
+        const rect = activeStage.getBoundingClientRect();
+        const px = (lastEvent.clientX - rect.left) / rect.width;
+        const py = (lastEvent.clientY - rect.top) / rect.height;
+        const target = activeStage.querySelector('.tilt-3d');
+        if (!target) return;
+        target.style.setProperty('--ry', ((px - 0.5) * 2 * MAX_TILT).toFixed(2) + 'deg');
+        target.style.setProperty('--rx', ((0.5 - py) * 2 * MAX_TILT).toFixed(2) + 'deg');
+        target.style.setProperty('--gx', (px * 100).toFixed(1) + '%');
+        target.style.setProperty('--gy', (py * 100).toFixed(1) + '%');
+        activeStage.classList.add('is-tilting');
+      });
+    }, { passive: true });
+
+    document.documentElement.addEventListener('mouseleave', () => {
+      if (activeStage) { reset(activeStage); activeStage = null; }
+    });
+  });
+
+  /* ------------------------------------------------------------------
+     PROJECTS SCROLL STACK — on large screens the project cards pin and
+     stack; each card's progress (--p) and the cover from the next card
+     (--cover) are written as CSS variables, driven by scroll position.
+     Normal flow on small screens, short screens, and reduced motion.
+  ------------------------------------------------------------------ */
+  safeInit('projects scroll stack', () => {
+    if (prefersReducedMotion) return;
+    const stack = document.getElementById('projectsStack');
+    if (!stack) return;
+
+    const cards = Array.from(stack.children).filter(el => el.matches('.flagship-project, .project-card'));
+    if (cards.length < 2) return;
+
+    const query = window.matchMedia('(min-width: 1000px) and (min-height: 680px)');
+    const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+    let enabled = false;
+    let ticking = false;
+    let pinTops = [];
+
+    const update = () => {
+      ticking = false;
+      if (!enabled) return;
+      const vh = window.innerHeight;
+      const bounds = stack.getBoundingClientRect();
+      if (bounds.bottom < -300 || bounds.top > vh + 300) return;
+
+      const progress = cards.map((card, i) =>
+        clamp(1 - (card.getBoundingClientRect().top - pinTops[i]) / (vh * 0.55), 0, 1));
+
+      cards.forEach((card, i) => {
+        card.style.setProperty('--p', progress[i].toFixed(3));
+        const cover = i < cards.length - 1 ? progress[i + 1] : 0;
+        card.style.setProperty('--cover', cover.toFixed(3));
+      });
+    };
+
+    const requestUpdate = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    };
+
+    const measure = () => {
+      pinTops = cards.map(card => parseFloat(getComputedStyle(card).top) || 0);
+    };
+
+    // Equal heights keep the stack tidy (no taller card poking out from
+    // behind a shorter one). Returns false if the cards can't fit the screen.
+    const equalize = () => {
+      cards.forEach(card => { card.style.minHeight = ''; });
+      const tallest = Math.max(...cards.map(card => card.offsetHeight));
+      cards.forEach(card => { card.style.minHeight = tallest + 'px'; });
+      return tallest <= window.innerHeight - 180;
+    };
+
+    const enable = () => {
+      cards.forEach((card, i) => {
+        card.classList.add('scrolly-card');
+        card.style.setProperty('--stack-i', i);
+        card.style.setProperty('--p', 1);
+        card.style.setProperty('--cover', 0);
+      });
+      if (!equalize()) { disable(); return; }
+      measure();
+      enabled = true;
+      update();
+    };
+
+    const disable = () => {
+      enabled = false;
+      cards.forEach(card => {
+        card.classList.remove('scrolly-card');
+        card.style.minHeight = '';
+        ['--stack-i', '--p', '--cover'].forEach(name => card.style.removeProperty(name));
+      });
+    };
+
+    const sync = () => {
+      if (!query.matches) { if (enabled) disable(); return; }
+      if (!enabled) { enable(); return; }
+      if (equalize()) measure(); else disable();
+    };
+
+    window.addEventListener('scroll', requestUpdate, { passive: true });
+    window.addEventListener('resize', () => { sync(); requestUpdate(); });
+    sync();
   });
 
   /* ------------------------------------------------------------------
@@ -307,6 +451,36 @@ document.addEventListener('DOMContentLoaded', () => {
           { src: 'bloodbank-requests.png', alt: 'Blood Bank Management System hospital blood requests page with status and priority', caption: 'Hospital requests' }
         ]
       },
+      gramshala: {
+        kind: 'project',
+        tag: 'Internship Project · In Progress',
+        title: 'Gramshala',
+        meta: 'CodeFlurry Technologies · September 2026 — Present',
+        paragraphs: [
+          'Gramshala is a WhatsApp-based automation solution intended to help Gram Panchayats communicate with citizens more efficiently.',
+          'It is currently in development as part of my internship: n8n workflows for WhatsApp-based communication, automating the delivery of updates such as Gram Panchayat meeting announcements, and an exploration of Retrieval-Augmented Generation (RAG) to help users find relevant information from documents and knowledge sources.',
+          'This is a company project, so implementation details are kept high-level.'
+        ],
+        stack: ['n8n', 'WhatsApp', 'Workflow Automation', 'RAG (exploring)'],
+        highlights: [
+          'Building WhatsApp-based communication workflows with n8n',
+          'Automating delivery of meeting announcements and updates',
+          'Exploring RAG for document-based information retrieval'
+        ],
+        screenshots: []
+      },
+      oralguard: {
+        kind: 'project',
+        tag: 'In Development',
+        title: 'OralGuard AI',
+        meta: null,
+        paragraphs: [
+          'A CNN-based oral-condition screening project, currently under development.'
+        ],
+        stack: ['CNN'],
+        highlights: [],
+        screenshots: []
+      },
       portfolio: {
         kind: 'project',
         tag: 'Project',
@@ -349,6 +523,7 @@ document.addEventListener('DOMContentLoaded', () => {
           'Course certificates completed and independently verifiable on Coursera.'
         ],
         items: [
+          { course: 'Workflow Automation with n8n: Logic, Data & Error Handling', issuer: 'LearnKartS', type: 'Course Certificate', date: 'Oct 21, 2026', verifyUrl: 'https://coursera.org/verify/91RKWA4E2FJD', image: 'cert-n8n.jpg' },
           { course: 'The Full Stack', issuer: 'Meta', type: 'Course Certificate', date: 'May 25, 2026', verifyUrl: 'https://coursera.org/verify/541YKREC8GKS', image: 'cert-meta.jpg' },
           { course: 'Machine Learning with Python', issuer: 'IBM', type: 'Course Certificate', date: 'May 11, 2026', verifyUrl: 'https://coursera.org/verify/T0YNINVKB19W', image: 'cert-ibm.jpg' },
           { course: 'Introduction to AI', issuer: 'Google', type: 'Course Certificate', date: 'Apr 9, 2026', verifyUrl: 'https://coursera.org/verify/4TIA8QRDG8XG', image: 'cert-google.jpg' },
@@ -400,7 +575,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const shots = data.screenshots || [];
       const galleryHtml = shots.length ? `
         <div class="modal-gallery" data-gallery>
-          <div class="gallery-frame">
+          <div class="tilt-stage"><div class="gallery-frame tilt-3d">
             <div class="gallery-track">
               ${shots.map(s => `<a href="${s.src}" target="_blank" rel="noopener" aria-label="Open full-size screenshot: ${s.caption}"><img src="${s.src}" alt="${s.alt}" class="gallery-img"></a>`).join('')}
             </div>
@@ -408,7 +583,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <button type="button" class="gallery-nav gallery-prev" aria-label="Previous screenshot">&#8249;</button>
             <button type="button" class="gallery-nav gallery-next" aria-label="Next screenshot">&#8250;</button>
             ` : ''}
-          </div>
+          </div></div>
           <div class="gallery-footer">
             <p class="gallery-caption">${shots[0].caption}</p>
             ${shots.length > 1 ? `
@@ -425,10 +600,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ${metaHtml}
         ${paraHtml}
         ${galleryHtml}
-        <h3>Tech Stack</h3>
-        <div class="badge-row">${stackHtml}</div>
-        <h3>Highlights</h3>
-        <ul class="highlight-list">${highlightHtml}</ul>
+        ${data.stack.length ? `<h3>Tech Stack</h3><div class="badge-row">${stackHtml}</div>` : ''}
+        ${data.highlights.length ? `<h3>Highlights</h3><ul class="highlight-list">${highlightHtml}</ul>` : ''}
       `;
 
       if (shots.length) initGallery(body.querySelector('[data-gallery]'), shots);
@@ -440,9 +613,9 @@ document.addEventListener('DOMContentLoaded', () => {
         <span class="project-tag">${data.tag}</span>
         <h2 id="modalTitle">${data.title}</h2>
         <p class="modal-meta">${data.meta}</p>
-        <div class="cert-image-frame">
+        <div class="tilt-stage"><div class="cert-image-frame tilt-3d">
           <img src="${data.image}" alt="${data.imageAlt}" class="cert-image">
-        </div>
+        </div></div>
         ${paraHtml}
       `;
     };
@@ -457,13 +630,13 @@ document.addEventListener('DOMContentLoaded', () => {
         <h2 id="modalTitle">${data.title}</h2>
         ${paraHtml}
         <div class="modal-gallery" data-gallery>
-          <div class="gallery-frame">
+          <div class="tilt-stage"><div class="gallery-frame tilt-3d">
             <div class="gallery-track">
               ${items.map(it => `<a href="${it.image}" target="_blank" rel="noopener" aria-label="Open full-size certificate: ${it.course}"><img src="${it.image}" alt="${it.course} certificate, issued by ${it.issuer}" class="gallery-img"></a>`).join('')}
             </div>
             <button type="button" class="gallery-nav gallery-prev" aria-label="Previous certificate">&#8249;</button>
             <button type="button" class="gallery-nav gallery-next" aria-label="Next certificate">&#8250;</button>
-          </div>
+          </div></div>
           <div class="gallery-footer">
             <p class="gallery-caption">${items[0].course}</p>
             <div class="gallery-dots">
@@ -497,6 +670,9 @@ document.addEventListener('DOMContentLoaded', () => {
       return renderProject(data);
     };
 
+    let hoverTimer = null;
+    let suppressHover = false;
+
     const openModal = (key) => {
       const data = modalContent[key];
       if (!data) return;
@@ -512,14 +688,41 @@ document.addEventListener('DOMContentLoaded', () => {
       overlay.classList.remove('open');
       overlay.setAttribute('aria-hidden', 'true');
       document.body.classList.remove('modal-open');
+      suppressHover = true;
       if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
     };
 
     triggers.forEach(trigger => {
+      const modalKey = trigger.getAttribute('data-modal-open');
+
       trigger.addEventListener('click', (e) => {
         e.preventDefault();
-        openModal(trigger.getAttribute('data-modal-open'));
+        if (hoverTimer) {
+          clearTimeout(hoverTimer);
+          hoverTimer = null;
+        }
+        openModal(modalKey);
       });
+
+      if (trigger.hasAttribute('data-modal-hover')) {
+        trigger.addEventListener('mouseenter', () => {
+          if (suppressHover) return;
+          if (!window.matchMedia('(hover: hover)').matches) return;
+          if (overlay.classList.contains('open')) return;
+          if (hoverTimer) clearTimeout(hoverTimer);
+          hoverTimer = setTimeout(() => {
+            openModal(modalKey);
+          }, 120);
+        });
+
+        trigger.addEventListener('mouseleave', () => {
+          if (hoverTimer) {
+            clearTimeout(hoverTimer);
+            hoverTimer = null;
+          }
+          suppressHover = false;
+        });
+      }
     });
 
     closeBtn.addEventListener('click', closeModal);

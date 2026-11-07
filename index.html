@@ -47,6 +47,7 @@
       <a href="#about" class="nav-link">About</a>
       <a href="#projects" class="nav-link">Projects</a>
       <a href="#skills" class="nav-link">Skills</a>
+      <a href="#automation" class="nav-link">Automation</a>
       <a href="#education" class="nav-link">Education</a>
       <a href="#experience" class="nav-link">Experience</a>
       <a href="#achievements" class="nav-link">Achievements</a>
@@ -108,7 +109,7 @@
       <dl class="hero-meta">
         <div><dt>Focus</dt><dd>Backend &amp; AI Systems</dd></div>
         <div><dt>Based in</dt><dd>India</dd></div>
-        <div><dt>Status</dt><dd>Open to opportunities</dd></div>
+        <div><dt>Status</dt><dd>Open to internships</dd></div>
       </dl>
     </div>
 
@@ -119,8 +120,6 @@
           <div class="hero-photo-frame">
             <img src="profile.jpg" alt="Portrait of Sumukh B" class="hero-photo" width="360" height="440">
           </div>
-
-          
 
         </div>
       </div>
@@ -172,17 +171,15 @@
           <span class="stat-value">Secretary</span>
           <span class="stat-label">Encoders Club</span>
         </div>
-        <button type="button" class="stat-card stat-card-clickable" data-reveal data-modal-open="expo-cert">
+        <button type="button" class="stat-card stat-card-clickable" data-reveal data-modal-open="expo-cert" data-modal-hover="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4Z"/><path d="M7 5H4a1 1 0 0 0-1 1v1a4 4 0 0 0 4 4M17 5h3a1 1 0 0 1 1 1v1a4 4 0 0 1-4 4"/></svg>
           <span class="stat-value">3rd Place</span>
           <span class="stat-label">University Project Expo</span>
-          <span class="stat-view-hint">View Certificate →</span>
         </button>
-        <button type="button" class="stat-card stat-card-clickable" data-reveal data-modal-open="coursera-certs">
+        <button type="button" class="stat-card stat-card-clickable" data-reveal data-modal-open="coursera-certs" data-modal-hover="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="6"/><path d="M9 14.5 7 22l5-3 5 3-2-7.5"/></svg>
           <span class="stat-value">Certified</span>
           <span class="stat-label">Coursera</span>
-          <span class="stat-view-hint">View Certificates →</span>
         </button>
       </div>
     </div>
@@ -196,6 +193,8 @@
   <div class="container">
     <p class="section-eyebrow" data-reveal>Projects</p>
     <h2 class="section-heading" data-reveal>Things I've built</h2>
+
+    <div class="projects-stack" id="projectsStack">
 
     <!-- FLAGSHIP PROJECT -->
     <article class="flagship-project" data-reveal>
@@ -233,7 +232,7 @@
 
         <div class="hero-actions">
           <button type="button" class="btn btn-primary" data-modal-open="framesense">View Project Details</button>
-          <a href="https://github.com/SBR-sys/Framesense" class="btn btn-secondary">GitHub Repository</a>
+          <a href="#" class="btn btn-secondary">GitHub Repository</a>
         </div>
       </div>
     </article>
@@ -259,15 +258,15 @@
           for accurate, real-time record keeping.
         </p>
         <div class="badge-row">
-          <span class="badge">PHP</span>
-          <span class="badge">HTML</span>
+          <span class="badge">Python</span>
+          <span class="badge">FastAPI</span>
           <span class="badge">MySQL</span>
-          <span class="badge">JavaScript</span>
+          <span class="badge">HTML</span>
           <span class="badge">CSS</span>
         </div>
         <div class="hero-actions">
           <button type="button" class="btn btn-primary" data-modal-open="gamingcafe">View Details</button>
-          <a href="https://github.com/SBR-sys/Mystic_Arcade" class="btn btn-secondary">GitHub</a>
+          <a href="#" class="btn btn-secondary">GitHub</a>
         </div>
       </div>
     </article>
@@ -302,7 +301,31 @@
         </div>
         <div class="hero-actions">
           <button type="button" class="btn btn-primary" data-modal-open="bloodbank">View Details</button>
-          <a href="https://github.com/SBR-sys/blood-bank-management-system" class="btn btn-secondary">GitHub</a>
+          <a href="#" class="btn btn-secondary">GitHub</a>
+        </div>
+      </div>
+    </article>
+
+    <!-- ORALGUARD AI (in development) -->
+    <article class="project-card" data-reveal>
+      <div class="project-card-visual">
+        <div class="project-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3.5"/></svg>
+          <span class="project-placeholder-title">Under Development</span>
+          <span class="project-placeholder-note">Screenshots will be added when ready</span>
+        </div>
+      </div>
+      <div class="project-card-info">
+        <span class="project-tag">In Development</span>
+        <h3>OralGuard AI</h3>
+        <p>
+          A CNN-based oral-condition screening project, currently under development.
+        </p>
+        <div class="badge-row">
+          <span class="badge">CNN</span>
+        </div>
+        <div class="hero-actions">
+          <button type="button" class="btn btn-primary" data-modal-open="oralguard">View Details</button>
         </div>
       </div>
     </article>
@@ -334,11 +357,12 @@
         </div>
         <div class="hero-actions">
           <button type="button" class="btn btn-primary" data-modal-open="portfolio">View Details</button>
-          <a href="https://github.com/SBR-sys/SBR_portfolio" target="_blank" rel="noopener" class="btn btn-secondary">GitHub</a>
+          <a href="https://github.com/SBR-sys" target="_blank" rel="noopener" class="btn btn-secondary">GitHub</a>
         </div>
       </div>
     </article>
 
+    </div>
   </div>
 </section>
 
@@ -358,27 +382,17 @@
           <h3>Programming Languages</h3>
         </div>
         <div class="chip-row">
-          <span class="chip">Python</span><span class="chip">Java</span><span class="chip">C</span><span class="chip">C++</span>
+          <span class="chip">Python</span><span class="chip">Java</span><span class="chip">JavaScript</span><span class="chip">SQL</span><span class="chip">C / C++</span>
         </div>
       </div>
 
       <div class="skill-card" data-reveal>
         <div class="skill-card-head">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/></svg>
-          <h3>Web Development</h3>
+          <h3>Web Development &amp; Backend</h3>
         </div>
         <div class="chip-row">
-          <span class="chip">HTML</span><span class="chip">CSS</span><span class="chip">JavaScript</span>
-        </div>
-      </div>
-
-      <div class="skill-card" data-reveal>
-        <div class="skill-card-head">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          <h3>Backend</h3>
-        </div>
-        <div class="chip-row">
-          <span class="chip">FastAPI</span><span class="chip">Flask</span>
+          <span class="chip">HTML</span><span class="chip">CSS</span><span class="chip">FastAPI</span><span class="chip">Flask</span><span class="chip">REST APIs</span><span class="chip chip-learning">React</span><span class="chip chip-learning">Node.js</span>
         </div>
       </div>
 
@@ -388,7 +402,7 @@
           <h3>Databases</h3>
         </div>
         <div class="chip-row">
-          <span class="chip">MySQL</span><span class="chip">MongoDB</span><span class="chip">PostgreSQL</span>
+          <span class="chip">MySQL</span><span class="chip">PostgreSQL</span><span class="chip">MongoDB</span><span class="chip">SQLite</span>
         </div>
       </div>
 
@@ -398,20 +412,96 @@
           <h3>AI &amp; Computer Vision</h3>
         </div>
         <div class="chip-row">
-          <span class="chip">YOLOv8</span><span class="chip">OpenCV</span>
+          <span class="chip">Machine Learning</span><span class="chip">CNN</span><span class="chip">OpenCV</span><span class="chip">YOLOv8</span><span class="chip">Computer Vision</span><span class="chip chip-learning">RAG</span>
+        </div>
+      </div>
+
+      <div class="skill-card" data-reveal>
+        <div class="skill-card-head">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="5" cy="12" r="2.5"/><circle cx="19" cy="5" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M7.4 11 16.6 6M7.4 13l9.2 5"/></svg>
+          <h3>Workflow Automation &amp; AI Integration</h3>
+        </div>
+        <div class="chip-row">
+          <span class="chip">n8n</span><span class="chip">Workflow Automation</span><span class="chip">API Integration</span><span class="chip">Webhooks</span><span class="chip">JSON Data Processing</span><span class="chip chip-learning">AI Workflow Integration</span><span class="chip chip-learning">Google Gemini API</span><span class="chip chip-learning">MCP</span>
         </div>
       </div>
 
       <div class="skill-card" data-reveal>
         <div class="skill-card-head">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94Z"/></svg>
-          <h3>Tools</h3>
+          <h3>Developer Tools &amp; Infrastructure</h3>
         </div>
         <div class="chip-row">
-          <span class="chip">Git</span><span class="chip">GitHub</span><span class="chip">VS Code</span><span class="chip">Postman</span>
+          <span class="chip">Git</span><span class="chip">GitHub</span><span class="chip">Postman</span><span class="chip">VS Code</span><span class="chip chip-learning">Docker</span>
         </div>
       </div>
 
+    </div>
+
+    <p class="skills-legend" data-reveal>
+      <span class="legend-swatch legend-used"></span>Used in projects
+      <span class="legend-swatch legend-learning"></span>Learning or exploring
+    </p>
+  </div>
+</section>
+
+<!-- ============================================================
+     AUTOMATION & AI INTEGRATIONS SECTION
+============================================================ -->
+<section class="section section-alt" id="automation">
+  <div class="container">
+    <p class="section-eyebrow" data-reveal>Automation</p>
+    <h2 class="section-heading" data-reveal>Automation &amp; AI Integrations</h2>
+    <p class="section-lead" data-reveal>
+      Expanding beyond traditional web development into workflow automation
+      and AI-powered integrations.
+    </p>
+
+    <div class="auto-grid">
+
+      <div class="skill-card auto-card" data-reveal>
+        <div class="auto-card-head">
+          <div class="skill-card-head">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="5" cy="12" r="2.5"/><circle cx="19" cy="5" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M7.4 11 16.6 6M7.4 13l9.2 5"/></svg>
+            <h3>n8n Workflow Automation</h3>
+          </div>
+          <span class="status-pill">In Progress</span>
+        </div>
+        <p>Building workflows that connect APIs, process data, apply filters, remove duplicates, and send automated email notifications — including a job-alert automation.</p>
+      </div>
+
+      <div class="skill-card auto-card" data-reveal>
+        <div class="auto-card-head">
+          <div class="skill-card-head">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 2v5M15 2v5M7 7h10v4a5 5 0 0 1-10 0V7ZM12 16v6"/></svg>
+            <h3>AI &amp; API Integration</h3>
+          </div>
+          <span class="status-pill">Exploring</span>
+        </div>
+        <p>Learning how to integrate AI services and APIs into automated workflows, including the Google Gemini API.</p>
+      </div>
+
+      <div class="skill-card auto-card" data-reveal>
+        <div class="auto-card-head">
+          <div class="skill-card-head">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 9h6v6H9zM9 2v2M15 2v2M9 20v2M15 20v2M2 9h2M2 15h2M20 9h2M20 15h2"/></svg>
+            <h3>Model Context Protocol (MCP)</h3>
+          </div>
+          <span class="status-pill">Learning</span>
+        </div>
+        <p>Exploring how MCP helps AI applications interact with external tools and data sources.</p>
+      </div>
+
+      <div class="skill-card auto-card" data-reveal>
+        <div class="auto-card-head">
+          <div class="skill-card-head">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/><circle cx="11" cy="14" r="2.5"/><path d="m13 16 2.5 2.5"/></svg>
+            <h3>RAG &amp; Intelligent Automation</h3>
+          </div>
+          <span class="status-pill">Exploring</span>
+        </div>
+        <p>Exploring document-based information retrieval with RAG as part of the Gramshala project, to help users find relevant information.</p>
+      </div>
     </div>
   </div>
 </section>
@@ -419,7 +509,7 @@
 <!-- ============================================================
      EDUCATION SECTION
 ============================================================ -->
-<section class="section section-alt" id="education">
+<section class="section" id="education">
   <div class="container">
     <p class="section-eyebrow" data-reveal>Education</p>
     <h2 class="section-heading" data-reveal>Academic background</h2>
@@ -464,7 +554,7 @@
 <!-- ============================================================
      EXPERIENCE SECTION
 ============================================================ -->
-<section class="section" id="experience">
+<section class="section section-alt" id="experience">
   <div class="container">
     <p class="section-eyebrow" data-reveal>Experience</p>
     <h2 class="section-heading" data-reveal>Hands-on experience</h2>
@@ -474,6 +564,7 @@
         <div>
           <h3>Software Development Intern</h3>
           <p class="experience-company">CodeFlurry Technologies</p>
+          <p class="experience-location">Mysore, Karnataka, India</p>
         </div>
         <span class="experience-duration">
           <span class="status-dot"></span>
@@ -485,6 +576,22 @@
         development, backend technologies, debugging, testing, and real-world
         software development workflows.
       </p>
+
+      <div class="experience-project">
+        <p class="experience-project-label">Current project</p>
+        <h4>Gramshala <span>WhatsApp-based automation for Gram Panchayats</span></h4>
+        <ul class="highlight-list experience-bullets">
+          <li>Working on WhatsApp-based communication workflows, built with n8n, to help Gram Panchayats reach citizens more efficiently.</li>
+          <li>Contributing to automating the delivery of updates such as Gram Panchayat meeting announcements.</li>
+          <li>Exploring Retrieval-Augmented Generation (RAG) to help users find relevant information from documents and knowledge sources.</li>
+        </ul>
+        <div class="badge-row">
+          <span class="badge">n8n</span>
+          <span class="badge">WhatsApp</span>
+          <span class="badge">Workflow Automation</span>
+          <span class="badge">RAG</span>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -492,7 +599,7 @@
 <!-- ============================================================
      LEADERSHIP SECTION
 ============================================================ -->
-<section class="section section-alt" id="achievements">
+<section class="section" id="achievements">
   <div class="container">
     <p class="section-eyebrow" data-reveal>Achievements</p>
     <h2 class="section-heading" data-reveal>Beyond the codebase</h2>
@@ -540,7 +647,7 @@
 <!-- ============================================================
      CONTACT SECTION
 ============================================================ -->
-<section class="section" id="contact">
+<section class="section section-alt" id="contact">
   <div class="container">
     <p class="section-eyebrow" data-reveal>Contact</p>
     <h2 class="section-heading" data-reveal>Let's work together</h2>
