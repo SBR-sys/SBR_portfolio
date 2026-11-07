@@ -164,6 +164,34 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ------------------------------------------------------------------
+     SCROLL HOVER EFFECT (mobile & desktop)
+     As content cards and items pass through the viewport focus zone
+     while scrolling, dynamically activate the hover effect (lift, glow, scale).
+  ------------------------------------------------------------------ */
+  safeInit('scroll hover focus', () => {
+    if (prefersReducedMotion || !('IntersectionObserver' in window)) return;
+
+    const targetCards = document.querySelectorAll(
+      '.flagship-project, .project-card, .about-card, .stat-card, .skill-card, .education-card, .experience-card, .qualities-panel, .timeline-item'
+    );
+    if (!targetCards.length) return;
+
+    const isMobile = window.innerWidth <= 768;
+    const rootMargin = isMobile ? '-20% 0px -20% 0px' : '-24% 0px -24% 0px';
+
+    const scrollHoverObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        entry.target.classList.toggle('scroll-hover', entry.isIntersecting);
+      });
+    }, {
+      threshold: 0.12,
+      rootMargin
+    });
+
+    targetCards.forEach(card => scrollHoverObserver.observe(card));
+  });
+
+  /* ------------------------------------------------------------------
      HERO VISUAL — subtle parallax on pointer move (desktop & mobile)
   ------------------------------------------------------------------ */
   safeInit('hero parallax', () => {
