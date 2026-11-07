@@ -390,7 +390,16 @@ main, .navbar, .footer{ position: relative; z-index: 1; }
   justify-content: center;
 }
 
-.hero-photo-stage{ position: relative; width: 320px; height: 400px; }
+.hero-photo-stage{
+  position: relative;
+  width: 320px;
+  height: 400px;
+  animation: heroPhotoFloat 6s ease-in-out infinite;
+}
+@keyframes heroPhotoFloat{
+  0%, 100%{ transform: translateY(0); }
+  50%{ transform: translateY(-8px); }
+}
 
 .hero-photo-frame{
   width: 100%; height: 100%;
@@ -709,33 +718,38 @@ main, .navbar, .footer{ position: relative; z-index: 1; }
 .project-card:hover{ border-color: rgba(59,130,246,.35); box-shadow: var(--shadow-card-hover); }
 .project-card:hover .card-screenshot{ transform: scale(1.035); }
 
-/* subtle cursor-following glow — desktop pointer devices only */
-@media (hover: hover) and (pointer: fine){
-  .flagship-project::before,
-  .project-card::before,
-  .about-card::before,
-  .stat-card::before,
-  .skill-card::before,
-  .education-card::before,
-  .experience-card::before{
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: inherit;
-    background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 50%), rgba(56,189,248,.12), transparent 70%);
-    opacity: 0;
-    transition: opacity .4s var(--ease);
-    pointer-events: none;
-  }
-  .flagship-project:hover::before,
-  .project-card:hover::before,
-  .about-card:hover::before,
-  .stat-card:hover::before,
-  .skill-card:hover::before,
-  .education-card:hover::before,
-  .experience-card:hover::before{ opacity: 1; }
+/* subtle cursor-following glow — desktop & mobile touch */
+.flagship-project::before,
+.project-card::before,
+.about-card::before,
+.stat-card::before,
+.skill-card::before,
+.education-card::before,
+.experience-card::before{
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 50%), rgba(56,189,248,.12), transparent 70%);
+  opacity: 0;
+  transition: opacity .4s var(--ease);
+  pointer-events: none;
 }
+.flagship-project:hover::before,
+.flagship-project:active::before,
+.project-card:hover::before,
+.project-card:active::before,
+.about-card:hover::before,
+.about-card:active::before,
+.stat-card:hover::before,
+.stat-card:active::before,
+.skill-card:hover::before,
+.skill-card:active::before,
+.education-card:hover::before,
+.education-card:active::before,
+.experience-card:hover::before,
+.experience-card:active::before{ opacity: 1; }
 .project-card-info h3{ font-size: 1.25rem; margin-bottom: 12px; }
 .project-card-info p{ margin-bottom: 18px; font-size: .94rem; }
 
@@ -1363,24 +1377,49 @@ html.hero-ready.hero-entered .hero-visual{
 
 
 /* ==========================================================================
-   HOVER BULGE
+   HOVER & TOUCH ANIMATIONS
    Uses the independent `translate` / `scale` properties so it never fights
-   the scroll-reveal `transform`. Pointer devices only.
+   the scroll-reveal `transform`. Supports both desktop and mobile formats.
    ========================================================================== */
-@media (hover: hover) and (pointer: fine){
-  .stat-card:hover,
-  .skill-card:hover,
-  .education-card:hover,
-  .experience-card:hover{ scale: 1.03; translate: 0 -6px; }
-
-  .about-card:hover,
-  .qualities-panel:hover,
-  .project-card:hover,
-  .flagship-project:hover{ scale: 1.012; translate: 0 -4px; }
-
-  .chip:hover{ scale: 1.08; }
-  .quality-chip:hover{ scale: 1.08; translate: 0 -2px; }
+.stat-card:hover,
+.stat-card:active,
+.skill-card:hover,
+.skill-card:active,
+.education-card:hover,
+.education-card:active,
+.experience-card:hover,
+.experience-card:active{
+  scale: 1.03;
+  translate: 0 -6px;
+  border-color: var(--accent);
+  box-shadow: var(--shadow-glow);
 }
+
+.about-card:hover,
+.about-card:active,
+.qualities-panel:hover,
+.qualities-panel:active,
+.project-card:hover,
+.project-card:active,
+.flagship-project:hover,
+.flagship-project:active{
+  scale: 1.015;
+  translate: 0 -4px;
+  border-color: rgba(59,130,246,.4);
+  box-shadow: var(--shadow-glow);
+}
+
+.project-card:hover .card-screenshot,
+.project-card:active .card-screenshot,
+.flagship-project:hover .card-screenshot,
+.flagship-project:active .card-screenshot{
+  transform: scale(1.035);
+}
+
+.chip:hover,
+.chip:active{ scale: 1.08; color: var(--accent-2); border-color: var(--accent-2); }
+.quality-chip:hover,
+.quality-chip:active{ scale: 1.08; translate: 0 -2px; color: var(--accent-2); border-color: var(--accent-2); }
 
 /* ==========================================================================
    3D TILT (certificates and screenshot galleries)

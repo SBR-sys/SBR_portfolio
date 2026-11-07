@@ -127,9 +127,8 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ------------------------------------------------------------------
      SCROLL REVEAL (fade-up)
      Content is visible by default (see CSS). Once IntersectionObserver
-     is confirmed available, elements fade in every time they enter the
-     viewport and fade back out when they leave — replays on every pass,
-     scrolling down or back up.
+     is confirmed available, elements fade in as they enter the viewport.
+     On mobile, elements stay revealed once seen for smooth scrolling.
   ------------------------------------------------------------------ */
   safeInit('scroll reveal', () => {
     const revealEls = document.querySelectorAll('[data-reveal]');
@@ -141,11 +140,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.documentElement.classList.add('reveal-ready');
 
+    const isMobile = window.innerWidth <= 768;
+    const threshold = isMobile ? 0.06 : 0.12;
+    const rootMargin = isMobile ? '0px 0px -15px 0px' : '0px 0px -40px 0px';
+
     const revealObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
-        entry.target.classList.toggle('revealed', entry.isIntersecting);
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+          if (isMobile) {
+            revealObserver.unobserve(entry.target);
+          }
+        } else if (!isMobile) {
+          entry.target.classList.remove('revealed');
+        }
       });
-    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+    }, { threshold, rootMargin });
 
     revealEls.forEach((el, i) => {
       el.style.setProperty('--reveal-delay', `${Math.min(i % 4, 3) * 80}ms`);
@@ -154,29 +164,28 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ------------------------------------------------------------------
-     HERO VISUAL — subtle parallax on pointer move (desktop hover only)
+     HERO VISUAL — subtle parallax on pointer move (desktop & mobile)
   ------------------------------------------------------------------ */
   safeInit('hero parallax', () => {
     const heroEl = document.querySelector('.hero');
     const visualStage = document.getElementById('visualStage');
     if (!heroEl || !visualStage || prefersReducedMotion) return;
-    if (!window.matchMedia('(hover: hover)').matches) return;
 
     let rafId = null;
     visualStage.style.transition = 'transform 0.3s ease-out';
     visualStage.style.transformStyle = 'preserve-3d';
 
-    heroEl.addEventListener('mousemove', (e) => {
+    heroEl.addEventListener('pointermove', (e) => {
       if (rafId) cancelAnimationFrame(rafId);
       rafId = requestAnimationFrame(() => {
         const rect = visualStage.getBoundingClientRect();
-        const relX = (e.clientX - rect.left - rect.width / 2) / rect.width;
-        const relY = (e.clientY - rect.top - rect.height / 2) / rect.height;
+        const relX = (e.clientX - rect.left - rect.width / 2) / (rect.width || 1);
+        const relY = (e.clientY - rect.top - rect.height / 2) / (rect.height || 1);
         visualStage.style.transform = `rotateY(${relX * 6}deg) rotateX(${-relY * 6}deg)`;
       });
-    });
+    }, { passive: true });
 
-    heroEl.addEventListener('mouseleave', () => {
+    heroEl.addEventListener('pointerleave', () => {
       visualStage.style.transform = 'rotateY(0deg) rotateX(0deg)';
     });
   });
@@ -199,39 +208,41 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ------------------------------------------------------------------
-     CARD CURSOR GLOW — soft light that follows the pointer across
-     projects, about, skills, and education cards. Desktop pointer
-     devices only; skipped on touch and reduced motion.
+     CARD CURSOR GLOW — soft light that follows pointer/touch across
+     projects, about, skills, and education cards on all screen formats.
   ------------------------------------------------------------------ */
   safeInit('card cursor glow', () => {
     if (prefersReducedMotion) return;
-    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
 
     const glowCards = document.querySelectorAll('.flagship-project, .project-card, .about-card, .stat-card, .skill-card, .education-card, .experience-card');
     if (!glowCards.length) return;
 
+    const updateGlow = (e, card) => {
+      const rect = card.getBoundingClientRect();
+      card.style.setProperty('--mx', `${e.clientX - rect.left}px`);
+      card.style.setProperty('--my', `${e.clientY - rect.top}px`);
+    };
+
     glowCards.forEach(card => {
       let rafId = null;
-      card.addEventListener('mousemove', (e) => {
+      const onMove = (e) => {
         if (rafId) return;
         rafId = requestAnimationFrame(() => {
-          const rect = card.getBoundingClientRect();
-          card.style.setProperty('--mx', `${e.clientX - rect.left}px`);
-          card.style.setProperty('--my', `${e.clientY - rect.top}px`);
+          updateGlow(e, card);
           rafId = null;
         });
-      });
+      };
+      card.addEventListener('pointermove', onMove, { passive: true });
+      card.addEventListener('pointerdown', (e) => updateGlow(e, card), { passive: true });
     });
   });
 
   /* ------------------------------------------------------------------
      3D TILT — certificates and screenshot galleries lean toward the pointer
-     with a moving glare. Delegated, so it works on dynamically rendered modals.
-     Mouse only; skipped on touch and reduced motion.
+     with a moving glare. Works on desktop pointer and mobile touch drag.
   ------------------------------------------------------------------ */
   safeInit('3d tilt', () => {
     if (prefersReducedMotion) return;
-    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
 
     const MAX_TILT = 8;
     let activeStage = null;
@@ -248,7 +259,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     document.addEventListener('pointermove', (e) => {
-      if (e.pointerType !== 'mouse') return;
       const stage = e.target.closest ? e.target.closest('.tilt-stage') : null;
       if (activeStage && activeStage !== stage) {
         reset(activeStage);
@@ -262,8 +272,8 @@ document.addEventListener('DOMContentLoaded', () => {
         frame = null;
         if (!activeStage || !lastEvent || !document.contains(activeStage)) return;
         const rect = activeStage.getBoundingClientRect();
-        const px = (lastEvent.clientX - rect.left) / rect.width;
-        const py = (lastEvent.clientY - rect.top) / rect.height;
+        const px = (lastEvent.clientX - rect.left) / (rect.width || 1);
+        const py = (lastEvent.clientY - rect.top) / (rect.height || 1);
         const target = activeStage.querySelector('.tilt-3d');
         if (!target) return;
         target.style.setProperty('--ry', ((px - 0.5) * 2 * MAX_TILT).toFixed(2) + 'deg');
@@ -274,6 +284,12 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }, { passive: true });
 
+    document.addEventListener('pointerup', () => {
+      if (activeStage) { reset(activeStage); activeStage = null; }
+    });
+    document.addEventListener('pointercancel', () => {
+      if (activeStage) { reset(activeStage); activeStage = null; }
+    });
     document.documentElement.addEventListener('mouseleave', () => {
       if (activeStage) { reset(activeStage); activeStage = null; }
     });
@@ -707,7 +723,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (trigger.hasAttribute('data-modal-hover')) {
         trigger.addEventListener('mouseenter', () => {
           if (suppressHover) return;
-          if (!window.matchMedia('(hover: hover)').matches) return;
           if (overlay.classList.contains('open')) return;
           if (hoverTimer) clearTimeout(hoverTimer);
           hoverTimer = setTimeout(() => {
@@ -722,6 +737,13 @@ document.addEventListener('DOMContentLoaded', () => {
           }
           suppressHover = false;
         });
+
+        trigger.addEventListener('touchend', (e) => {
+          if (overlay.classList.contains('open')) return;
+          e.preventDefault();
+          if (hoverTimer) clearTimeout(hoverTimer);
+          openModal(modalKey);
+        }, { passive: false });
       }
     });
 
